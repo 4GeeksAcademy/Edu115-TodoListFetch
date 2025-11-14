@@ -7,10 +7,32 @@ const Home = () => {
 
     const url = "https://playground.4geeks.com/todo/";
 
+    const crearUsuario = async () => {
+        try {
+            const response = await fetch(url + "users/EduardoP", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!response.ok) throw new Error("No se pudo crear el usuario");
+            console.log("Usuario 'EduardoP' creado exitosamente");
+        } catch (error) {
+            console.error("Error al crear el usuario:\n", error);
+        }
+    };
+
     const muestraLista = async () => {
         try {
             const response = await fetch(url + "users/EduardoP");
+
+            if (response.status === 404) {
+                console.log("Usuario no existe, creando usuario...");
+                await crearUsuario();
+                return muestraLista();
+            }
+
             if (!response.ok) throw new Error("No se pudo obtener la lista");
+
             const data = await response.json();
             setLista(data.todos);
         } catch (error) {
